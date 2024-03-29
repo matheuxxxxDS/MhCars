@@ -13,7 +13,6 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-
     public IActionResult Index()
     {
        List<Carros> carros = [];
@@ -22,9 +21,21 @@ public class HomeController : Controller
             string dados = leitor.ReadToEnd();
             carros = JsonSerializer.Deserialize<List<Carros>>(dados);
        }
+       List<Tipo> tipos = [];
+       using (StreamReader leitor = new("Data\\tipos.json"))
+       {
+            string dados = leitor.ReadToEnd();
+            tipos = JsonSerializer.Deserialize<List<Tipo>>(dados);
+       }
+       ViewData["Tipos"] = tipos;
         return View(carros);
     }
 
+    public IActionResult Details(int id)
+    {
+        List<Carros> carros = [];
+        return View(carro);
+    }
     public IActionResult Privacy()
     {
         return View();
