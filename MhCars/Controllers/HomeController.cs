@@ -30,10 +30,32 @@ public class HomeController : Controller
        ViewData["Tipos"] = tipos;
         return View(carros);
     }
-
     public IActionResult Details(int id)
     {
         List<Carros> carros = [];
+        using (StreamReader leitor = new("Data\\carros.json"))
+        {
+            string dados = leitor.ReadToEnd();
+            carros = JsonSerializer.Deserialize<List<Carros>>(dados);
+        }
+        List<Tipo> tipos = [];
+        using (StreamReader leitor = new("Data\\tipos.json"))
+        {
+            string dados = leitor.ReadToEnd();
+            tipos = JsonSerializer.Deserialize<List<Tipo>>(dados);
+        }
+        DetailsVM details = new() {
+            Tipos = tipos,
+            Atual = carros.FirstOrDefault(p => p.Numero == id),
+            Anterior = carros.OrderByDescending(p => p.Numero).FirstOrDefault(p => p.Numero < id),
+            Proximo = carros.OrderBy(p => p.Numero).FirstOrDefault(p => p.Numero > id),
+        };
+        return View(details);
+        
+        ViewData["Tipos"] = tipos;
+        var carro = carros
+            .Where(p => p.Numero == id)
+            .FirstOrDefault();
         return View(carro);
     }
     public IActionResult Privacy()
